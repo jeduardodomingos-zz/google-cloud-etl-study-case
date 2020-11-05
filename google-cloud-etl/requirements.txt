@@ -1,0 +1,7 @@
+google-cloud-bigquery
+google-resumable-media==0.6.0
+google-cloud-storage==1.30.0
+setuptools==41.0.0
+requests==2.21.0
+numpy==1.18.5
+gcsfs

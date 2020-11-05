@@ -1,0 +1,37 @@
+jobs:
+    -   pysparkjob:
+            args:
+             - app_name:gcp_data_load
+             - lake_path:gcp-data-load-lake/raw/
+             - target_path:gcp-data-load-lake/target/
+             mainPythonFileUri: file:///build/br/com/domingos/juan/jobs/main_ingestor.py
+        stepId: gcp_bigquery_ingestor
+placement:
+    managedCluster:
+        clusterName: data-load-cluster
+        config:
+            gceClusterConfig:
+                zoneUri: us-east1-b
+                serviceAccountScopes:
+                    - https://www.googleapis.com/auth/cloud-platform
+                    - https://www.googleapis.com/auth/cloud.useraccounts.readonly
+                    - https://www.googleapis.com/auth/devstorage.read_write
+                    - https://www.googleapis.com/auth/logging.write
+                softwareConfig:
+                    properties:
+                        spark:spark.executor.memory: '4gb'
+                        spark:spark.driver.maxResultSize: '4gb'
+                        spark:spark.dynamicAllocationEnabled: 'true'
+                        dataproc:jobs.file-backed-output.enable: 'true'
+                        dataproc:dataproc.logging.stackdriver.enable: 'true'
+                    initializationActions:
+                    - executableFile: gs://gcp-data-load-build/scripts/init.sh
+                    masterConfig:
+                        machineTypeUri: n1-standard-4
+                    workerConfig:
+                        machineTypeUri: n1-standard-2
+                        numInstances: 4
+                    secondaryWorkerConfig:
+                        machineTypeUri: n1-standard-2
+                        numInstances: 2
+                        isPreemptible: true
